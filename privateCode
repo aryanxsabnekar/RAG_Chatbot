@@ -1,7 +1,0 @@
-class privateCode
-
-def __init__(self):
-  self.key = "sk-g01gRj_PBJC3hfq0vA0ri47JqzK6nuS9B4WO_bPYsUT3BlbkFJ9FaOniNl4KfPlmAaQwQS2pRDj0CAb-tmcMpVMhylgA"
-
-def getKey(self):
-  return self.key
