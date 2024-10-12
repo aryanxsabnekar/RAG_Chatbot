@@ -13,9 +13,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 
 
-######################################################### RAG STUFF ################################################
-
-os.environ["OPENAI_API_KEY"] = ${{secrets.API_KEY}}
+os.environ["OPENAI_API_KEY"] = ${{secrets.API_KEY}} # if it doesnt work, use your own OPENAI API KEY
 
 loader = TextLoader("handbook_data.txt")
 docs = loader.load()
@@ -28,7 +26,7 @@ vectorstore = Chroma.from_documents(txts, embeddings)
 
 qa_chain = RetrievalQA.from_chain_type(llm=OpenAI(),chain_type="stuff",retriever=vectorstore.as_retriever())
 
-################################################## GUI STUFF #####################################################
+
 def create_rounded_button(parent,text,command):
     style = ttk.Style()
     style.configure("Round.TButton",padding=6,relief="flat",background="#4CAF50")
