@@ -13,7 +13,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 
 
-os.environ["OPENAI_API_KEY"] = ${{secrets.API_KEY}} # if it doesnt work, use your own OPENAI API KEY
+os.environ["OPENAI_API_KEY"] = ${{secrets.API_KEY}} # if it doesnt work, replace "${{secrets.API_KEY}}" with your own OPENAI API KEY
 
 loader = TextLoader("handbook_data.txt")
 docs = loader.load()
