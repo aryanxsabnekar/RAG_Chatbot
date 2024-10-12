@@ -10,7 +10,10 @@ from langchain.vectorstores import Chroma
 from langchain.chains import RetrievalQA
 from langchain.llms import OpenAI
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from dotenv import load_dotenv
 
+load_dotenv()
+api_key = os.getenv("OPENAI_API_KEY")
 ######################################################### RAG STUFF ################################################
 loader = TextLoader("handbook_data.txt")
 docs = loader.load()
