@@ -6,7 +6,7 @@ Please utilize your own API key to run the RAG Chatbot.
 
 
 
-These are all the packages installed on the working computer:
+These are all the packages installed on the working computer using pip install "":
 
 aiohappyeyeballs                         2.4.3
 
