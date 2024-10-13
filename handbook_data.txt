@@ -1,6 +1,8 @@
 Roar User Guide
 
+words surrounded by '*' are the sections of this guide.
 
+*********OVERVIEW************
 
 Welcome to the Roar User Guide!
 The Roar User Guide introduces users to the Institute for Computational and Data Sciences (ICDS), to the Roar computing platform, and provides detailed information on the use of Roar.
@@ -1320,3 +1322,783 @@ Additional details and considerations:
 	•	The choice of data transfer method depends on various factors, including the size of the data, network speed, and preferred level of security.
 	•	The data admin may need to follow specific procedures or guidelines for transferring data into the HPC system, such as adhering to data retention policies or obtaining necessary approvals.
 Overall, the workflow involves the user requesting the transfer through the RR Portal, moving the data to a staging area, and the data admin facilitating the transfer into the restricted storage area. This process ensures that data is transferred securely and efficiently while maintaining the integrity of the HPC system.
+
+
+********CONNECTING**************
+
+Connecting
+Accounts
+PSU Affiliates
+All individuals with an active Penn State access account and a Penn State email address may request access to Roar by submitting an account request. A Principal Investigator (PI) must be specified to request an account. The PI must be Penn State faculty and should be a supervisor, advisor or collaborator. Roar Collab (RC) accounts are granted to any users upon PI approval, but Roar Restricted (RR) accounts are only granted to individuals that require access to an active restricted storage allocation. For additional information on RR account activation, see the Roar Restricted Addendum.
+
+Non-PSU Affiliates
+For any external collaborators, a university faculty member must set up a sponsored access account with the university Accounts Office to provide the collaborator with an access account and a Penn State email address. Once the collaborator's access account is active, submit an account request.
+
+Connecting to Roar
+Users can connect to RC either through the RC Portal (rcportal.hpc.psu.edu) or via an ssh connection to the submit.hpc.psu.edu host.
+
+Users can only connect to RR via the RR Portal (rrportal.hpc.psu.edu), and RR is only accessible when connecting either via the Penn State network or via the Penn State GlobalProtect VPN. For additional information on connecting to RR, see the Roar Restricted Addendum.
+
+Roar Portals
+Users can connect to Roar through the Roar Portals powered by Open OnDemand. Open OnDemand is an NSF-funded, open-source HPC portal that provides users with a simple graphical web interface to HPC resources. Users can submit and monitor jobs, manage files, and run applications using just a web browser. The Roar Portals feature multiple built-in tools which can be accessed via the top menu bar on the Portals:
+
+Apps: Lists all available Portal apps
+Files: Provides a convenient graphical file manager and lists primary accessible file locations
+Jobs: Lists active jobs and allows use of the Job Composer
+Clusters: Provides shell access to submit nodes on RC
+Interactive Apps: Provides access to all the Portal interactive apps and interactive servers
+User Tools: Provides access to the User Filesystem Quotas display
+My Interactive Sessions: Lists any active sessions
+File Manager tool is disabled on RR Portal.
+
+In accordance with RR's Secure Data Transfer Management Model, the File Manager tool on the RR Portal is disabled. For additional information on the file transfer process for RR, see the Roar Restricted Addendum.
+
+Connecting via ssh
+Those who prefer to utilize only the command line environment can connect to RC using Secure Shell (SSH). SSH access for RR is disabled in accordance with security requirements for handling restricted data.
+
+Through the terminal on macOS or Linux or the command prompt on Windows, users can connect to RC using the following command:
+
+$ ssh <userid>@submit.hpc.psu.edu
+To connect, an RC account linked to an active Penn State access account user ID and password is required. By default, port 22 is used for secure shell connections. A password must be entered and then multi-factor authentication must be completed successfully to complete the login.
+
+Do Not Perform Computationally Intensive Tasks On Submit Nodes
+
+The connection to the system is made with a submit node. Submit nodes are configured primarily to handle incoming user connections and non-intensive computational tasks like editing small files. To perform computational tasks, compute resources must be used. See Submitting Jobs for more details.
+
+Linux Commands Quick Reference
+Command    Description
+ls    Lists the files in the current working directory
+cd    Changes the current directory to navigate to a new directory
+mv    Moves a file or directory to a new location
+mkdir    Makes a directory
+rmdir    Removes an empty directory
+touch    Creates a file
+rm    Removes a file (or a directory using the -r option)
+locate    Locates a file in a directory
+clear    Clears the terminal of all previous outputs
+history    Shows the history of previous commands
+find    Finds files in a directory
+grep    Searches files or outputs
+awk    A programming language for pattern scanning and processing
+id    Shows the list of groups for a user
+du    Shows disk usage
+env    Prints the current environment variables
+less    Displays a file
+cp    Copies a file (or a directory using the -r option)
+alias    Creates an alias, which is essentially an abbreviated command
+pwd    Prints the current working directory
+chmod    Changes file permissions
+chgrp    Changes group for a file or directory
+ldd    Shows the shared libraries required for an executable or library
+top    Displays the node usage
+/usr/bin/time    Shows time and memory statistics for a command being run
+bg    Continues running a paused task in the background
+fg    Brings a background task into the foreground
+Ctrl + c    Kills a process
+Ctrl + z    Suspends a process
+Ctrl + r    Searches the command history for a string
+Special characters are useful in many commands.
+
+Character    Description
+~    Indicates the home directory
+.    Indicates current working directory
+..    Indicates parent of current working directory
+*    Wildcard character for any string
+|    Connects the output of a command to the input of another
+>    Redirects a command output
+For complete details on any command listed above and more, use man <command> in a terminal session to display the manual page for the command or search online for more detailed usage of fundamental Linux commands.
+
+*********SUBMITTING-JOBS************
+Submitting Jobs
+Jobs with Slurm
+The Roar computing clusters are shared computational resources. To perform computationally intensive tasks, users must request compute resources and be provided access to those resources. The request/provision process allows the tasks of many users to be scheduled and carried out efficiently to avoid resource contention. Slurm is utilized by Roar as the job scheduler and resource manager. Slurm is an open source, fault-tolerant, and highly scalable cluster management and job scheduling system for Linux clusters. Slurm is rapidly rising in popularity and many other HPC systems use Slurm as well. Its primary functions are to
+
+Allocate access to compute resources to users for some duration of time
+Provide a framework for starting, executing, and monitoring work on the set of allocated compute resources
+Arbitrate contention for resources by managing a queue of pending work
+Warning
+
+Do not perform computationally intensive tasks on submit nodes. Submit a resource request via Slurm for computational resources so your computational task can be performed on a compute node.
+
+Slurm Resource Directives
+A compute session can be reached via either a batch job or an interactive job. The following sections provide more details on intiating compute sessions: Interactive Jobs, Interactive Jobs Through the Roar Portal, and Batch Jobs.
+
+Resource directives are used to request a specific set of compute resources for a compute session. The following table lists some of the most useful resource directives.
+
+Resource Directive	Description
+-J or --job-name	Specify a name for the job
+-A or --account	Charge resources used by a job to a specified account
+-p or --partition	Request a partition for the resource allocation
+-N or --nodes	Request a number of nodes
+-n or --ntasks	Request a number of tasks
+--ntasks-per-node	Request a number of tasks per allocated node
+--mem	Specify the amount of memory required per node
+--mem-per-cpu	Specify the amount of memory required per CPU
+-t or --time	Set a limit on the total run time
+-C or --constraint	Specify any required node features
+-e or --error	Connect script's standard error to a non-default file
+-o or --output	Connect script's standard output to a non-default file
+--requeue	Specify that the batch job should be eligible for requeuing
+--exclusive	Require exclusive use of nodes reserved for job
+Both standard output and standard error are directed to the same file by default, and the file name is slurm-%j.out, where the %j is replaced by the job ID. The output and error filenames are customizable, however, using the table of symbols below.
+
+Symbol	Description
+%j	Job ID
+%x	Job name
+%u	Username
+%N	Hostname where the job is running
+%A	Job array's master job allocation number
+%a	Job array ID (index) number
+Slurm makes use of environment variables within the scope of a job, and utilizing these variables can be beneficial in many cases.
+
+Environment Variable	Description
+SLURM_JOB_ID	ID of the job
+SLURM_JOB_NAME	Name of job
+SLURM_NNODES	Number of nodes
+SLURM_NODELIST	List of nodes
+SLURM_NTASKS	Total number of tasks
+SLURM_NTASKS_PER_NODE	Number of tasks per node
+SLURM_QUEUE	Queue (partition)
+SLURM_SUBMIT_DIR	Directory of job submission
+Further details on the available resource directives for Slurm are defined by Slurm in the documentation of the salloc and sbatch commands.
+
+Requesting Resources
+The resource directives should be populated with resource requests that are adequate to complete the job but should be minimal enough that the job can be placed somewhat quickly by the scheduler. The total time to completion of a job is the sum of the time the job is queued plus the time it takes the job to run to completion once placed. The queue time is minimized when the bare minimum amount of resources are requested, and the queue time grows as the amount of requested resources grows. The run time of the job is minimized when all the computational resources available to the job are efficiently utilized. The total time to completion, therefore, is minimized when the resources requested closely match the amount of computational resources that can be efficiently utilized by the job. During the development of the computational job, it is best to keep track of an estimate of the computational resources used by the job. Add about a 20% margin on top of the best estimate of the job's resource usage to produce practical resource requests used in the scheduler directives.
+
+It's useful to examine the amount of resources that a single laptop computer has, or 1 laptop-worth of resources, as a reference. A modern above-average laptop, for example, may have an 8-core processor and 32 GB of RAM. If a computational task can run on a laptop without crashing the device, then there is absolutely no need to submit a resource request larger than this unless the job can efficiently utilize the additional resources.
+
+Interactive Jobs
+The submit nodes are designed to handle very simple tasks such as connections, file editing, and submitting jobs. Performing intensive computations on submit nodes will not only be computationally inefficient, but it will also adversely impact other users' ability to interact with the system. For this reason, users that want to perform computations interactively should do so on compute nodes within an interactive compute session. Slurm's salloc command is used to request an interactive compute session. To work interactively on a compute node with a single processor core for one hour, use the following command:
+
+$ salloc --nodes=1 --ntasks=1 --mem=1G --time=01:00:00
+Equivalently, short options can be used instead of the long options, so the abbreviated version of this command is instead
+
+$ salloc -N 1 -n 1 --mem 1G -t 1:00:00
+The above commands submit a request to the scheduler to queue an interactive job, and when the scheduler is able to place the request, the prompt will return. The hostname in the prompt will change from the previous submit node name to a compute node. Now on a compute node, intensive computational tasks can be performed interactively. This session is terminated either when the time limit is reached or when the exit command is entered. After the interactive session completes, the session will return to the previous submit node.
+
+Interactive Jobs Through the Roar Portal
+The Roar Portals are simple graphical web interfaces that provide users with access to Roar. Users can submit and monitor jobs, manage files, and run applications using just a web browser. To access the Roar Portals, users must log in using valid Penn State access account credentials and must also have an account on Roar.
+
+The RC Portal is available at the following webpage: https://rcportal.hpc.psu.edu
+
+The RR Portal is available at the following webpage: https://rrportal.hpc.psu.edu
+
+Batch Jobs
+Users can run batch jobs by submitting scripts to the Slurm job scheduler. A Slurm script must do three things:
+
+Prescribe the resource requirements for the job
+Set the job's environment
+Specify the work to be carried out in the form of shell commands
+The portion of the job that prescribes the resource requirements contains the resource directives. Resource directives in Slurm submission scripts are denoted by lines starting with the #SBATCH keyword. The rest of the script, which both sets the environment and specifies the work to be done, consists of shell commands. The very first line of the submission script, #!/bin/bash, is called a shebang and specifies that the commands in the script are to be interpreted by the bash shell in this case.
+
+Below is a sample Slurm script for running a Python script:
+
+#!/bin/bash
+
+#SBATCH --job-name=apythonjob   # give the job a name
+#SBATCH --account=open          # specify the account
+#SBATCH --partition=open        # specify the partition
+#SBATCH --nodes=1               # request a node
+#SBATCH --ntasks=1              # request a task / cpu
+#SBATCH --mem=1G                # request the memory required per node
+#SBATCH --time=00:01:00         # set a limit on the total run time
+
+python pyscript.py
+In this sample submission script, the resource directives request a single node with a single task. Slurm is a task-based scheduler, and a task is equivalent to a processor core unless otherwise specified in the submission script. The scheduler directives then request 1 GB of memory per node for a maximum of 1 minute of runtime. The memory can be specified in KB, MB, GB, or TB by using a suffix of K, M, G, or T, respectively. If no suffix is used, the default is MB. Lastly, the work to be done is specified, which is the execution of a Python script in this case.
+
+If the above sample submission script was saved as pyjob.slurm, it would be submitted to the Slurm scheduler with the following sbatch command.
+
+$ sbatch pyjob.slurm
+The job can be submitted to the scheduler from any node. It is important to note, however, that any jobs submitted from within another computational session will inherit any Slurm environment variables that are not reset within the submitted job. The scheduler will keep the job in the job queue until the job gains sufficient priority to run on a compute node. Depending on the nature of the job and the availability of computational resources, the queue time can vary between seconds to days. To check the status of queued and running jobs, use the squeue command:
+
+$ squeue -u <userid>
+Using Dedicated Accounts and Partitions
+Open Queue
+All RC users have access to the open compute account, which allows users to submit jobs free of charge. RR does not offer a free compute account, so users must submit jobs to a compute account provided by a paid compute allocation.
+
+Under the open compute account on RC, the open, short, and ic partitions are available. Any resource limitations associated with compute partitions are set by Slurm via a Quality of Service (QOS) with the same name as the partition. The per-user resource limits defined by a QOS for any partition can be displayed with the following command:
+
+$ sacctmgr show qos <partition> format=name%10,maxtrespu%40
+For example, the per-user limits for the open partition are displayed by the following command:
+
+$ sacctmgr show qos open format=name%10,maxtrespu%40
+Jobs on the open compute account will start and run only when sufficient idle compute resources are available. For this reason, there is no guarantee on when an open job will start. All users have equal priority on the open compute account, but open jobs have a lower priority than jobs submitted to a paid compute account. If compute resources are required for higher priority jobs, then an open job may be cancelled so that the higher priority job can be placed. The cancellation of a running job to free resources for a higher priority job is called preemption. By using the --requeue option in a submission script, a job will re-enter the job queue automatically if it is preempted. Furthermore, it is highly recommended for users to break down any large computational workflows into smaller, more manageable computational units so jobs can save state throughout the stages of the workflow. Saving state at set checkpoints will allow the computational workflow to return to the latest checkpoint, reducing the amount of required re-computation in the case that a job is interrupted for any reason. RC has somewhat low utilization, however, so the vast majority of open jobs can be submitted and placed in a reasonable amount of time. The open compute account is entirely adequate for most individual users and for many use cases.
+
+The open compute account can be specified using the --account open or -A open resource directive. To specify the partition, the --partition <partition> or -p <partition> resource directive is used.
+
+Compute Allocations
+A paid compute allocation provides access to specific compute resources for an individual user or for a group of users. A paid compute allocation provides the following benefits:
+
+Guaranteed job start time within one hour
+No job preemption for non-burst jobs
+Burst capability up to 4x of the allocation's compute resources
+A compute allocation results in the creation of a compute account on Roar. The mybalance command on Roar lists accessible compute accounts and resource information associated with those compute accounts. Use the mybalance -h option for additional command usage information.
+
+To submit a job to a paid compute account, supply the --account or -A resource directive with the compute account name and supply the --partition or -p resource directive with sla-prio:
+
+#SBATCH -A <compute_account>
+#SBATCH -p sla-prio
+To enable bursting, if enabled for the compute account, supply the --partition burst or -p burst resource directive. Furthermore, the desired level of bursting for the job (burst2x, burst3x, burst4x, and so on) must be specified using the --qos resource directive. To list the available compute accounts and the associated available burst partitions, use the following command:
+
+$ sacctmgr show User $(whoami) --associations format=account%30,qos%40
+Modifying Allocation Coordinators
+The principal contact for a compute allocation is automatically designated as a coordinator for the compute account associated with the compute allocation. A coordinator can add or remove another coordinator with the following command:
+
+$ sacctmgr add coordinator account=<compute-account> name=<userid>
+$ sacctmgr remove coordinator account=<compute-account> name=<userid>
+Adding and Removing Users from an Allocation
+A coordinator can then add and remove users from the compute account using the following:
+
+$ sacctmgr add user account=<compute-account> name=<userid>
+$ sacctmgr remove user account=<compute-account> name=<userid>
+Available Compute Resources
+A paid compute allocation will typically cover a certain number of cores across a certain timeframe. The resources associated with a compute allocation are in units of core-hours. The compute allocation has an associated Limit in core-hours based on the initial compute allocation agreement. Any amount of compute resources used on the compute allocation results in an accrual of the compute allocation's Usage, again in core-hours. The compute allocation's Balance is simply the Limit minus its Usage.
+
+Balance [core-hours] = Limit [core-hours] - Usage [core-hours]
+At the start of the compute allocation, 60 days-worth of compute resources are added to the compute allocation's Limit. Each day thereafter, 1 day-worth of compute resources are added to the Limit.
+
+Initial Resources   [core-hours] = # cores * 24 hours/day * 60 days
+Daily Replenishment [core-hours] = # cores * 24 hours/day
+The daily replenishment scheme continues on schedule for the life of the compute allocation. Near the very end of the compute allocation, the replenishment schedule may be impacted by the enforced limit on the maximum allowable Balance. The Balance for a compute allocation cannot exceed the amount of compute resources for a window of 91 days and cannot exceed the amount usable by a 4x burst for the remaining life of the compute allocation. This limit is only relevant for the replenishment schedule nearing the very end of the compute allocation life.
+
+Max Allowable Balance [core-hours] = min( WindowMaxBalance, 4xBurstMaxBalance )
+
+where
+
+WindowMaxBalance  [core-hours] = # cores * 24 hours/day * 91 days
+4xBurstMaxBalance [core-hours] = # cores * 24 hours/day * # days remaining * 4 burst factor
+Using GPUs
+GPUs are available to users that are added to paid GPU compute accounts. To request GPU resources, use the --gpus resource directive:
+
+#!/bin/bash
+
+#SBATCH --job-name=apythonjob   # give the job a name
+#SBATCH --account=<gpu_acct>    # specify the account
+#SBATCH --partition=sla-prio    # specify the partition
+#SBATCH --nodes=1               # request a node
+#SBATCH --ntasks=1              # request a task / cpu
+#SBATCH --mem=1G                # request the memory required per node
+#SBATCH --gpus=1                # request a gpu
+#SBATCH --time=00:01:00         # set a limit on the total run time
+
+python pyscript.py
+Requesting GPU resources for a job is only beneficial if the software running within the job is GPU-enabled.
+
+Job Management and Monitoring
+A user can find the job ID, the assigned node(s), and other useful information using the squeue command. Specifically, the following command displays all running and queued jobs for a specific user:
+
+$ squeue -u <user>
+A useful environment variable is the SQUEUE_FORMAT variable which enables customization of the details shown by the squeue command. This variable can be set, for example, with the following command to provide a highly descriptive squeue output:
+
+$ export SQUEUE_FORMAT="%.9i %9P %35j %.8u %.2t %.12M %.12L %.5C %.7m %.4D %R"
+Further details on the usage of this variable are available on Slurm's squeue documentation page.
+
+Another useful job monitoring command is:
+
+$ scontrol show job <jobid>
+Also, a job can be cancelled with
+
+$ scancel <jobid>
+Valuable information can be obtained by monitoring a job on the compute node(s) as the job runs. Connect to the compute node of a running job with the ssh command. Note that a compute node can only be reached if the user has a resource reservation on that specific node. After connecting to the compute node, the top and ps commands are useful tools.
+
+$ ssh <comp-node-id>
+$ top -Hu <user>
+$ ps -aux | grep <user>
+Converting from PBS to Slurm
+Slurm's commands and scheduler directives can be mapped to and from PBS/Torque commands and scheduler directives. To convert any PBS/Torque scripts and/or workflows to Slurm, the commands and scheduler directives should be swapped out and reconfigured. See the table below for the mapping of some common commands and scheduler directives:
+
+Action	PBS/Torque Command	Slurm Command
+Submit a batch job	qsub	sbatch
+Request an interactive job	qsub -I	salloc
+Cancel a job	qdel	scancel
+Check job status	qstat	squeue
+Check job status for specific user	qstat -u <user>	squeue -u <user>
+Hold a job	qhold	scontrol hold
+Release a job	qrls	scontrol release
+Resource Request	PBS/Torque Directive	Slurm Directive
+Directive designator	#PBS	#SBATCH
+Number of nodes	-l nodes	-N or --nodes
+Number of CPUs	-l ppn	-n or --ntasks
+Amount of memory	-l mem	--mem or --mem-per-cpu
+Walltime	-l walltime	-t or --time
+Compute account	-A	-A or --account
+For a more complete list of command, scheduler directive, and option comparisons, see the Slurm Rosetta Stone.
+
+************HANDLING-DATA**************
+Handling Data
+Roar Collab (RC) offers many file transfer options, and these methods are described in the following sections on this page.
+
+To comply with restricted data storage standards, Roar Restricted (RR) must adhere to a Secure Data Transfer Management Model. The data transfer process is described in detail in the Roar Restricted Addendum.
+
+Available Filesystems and Quotas
+Roar offers several file storage options for users, each with their own quotas and data retention policies. The multiple options are available for users to optimize their workflows.
+
+Storage Information
+Roar Collab Storage
+Storage	Location	Space Quota	Files Quota	Backup Policy	Use Case
+Home	/storage/home	16 GB	500,000 files	Daily snapshot	Configuration files
+Work	/storage/work	128 GB	1 million files	Daily snapshot	Primary user-level data
+Scratch	/scratch	None	1 million files	No Backup
+Files purged after 30 days	Temporary files
+Group	/storage/group	Specific to
+allocation	1 million files
+per TB allocated	Daily snapshot	Primary shared data
+Home should primarily be used for configuration files and should not be used as a primary storage location for data. Work should be used as the primary personal data storage location. Scratch should be used for temporary files and for reading and writing large data files.
+
+To provide a user with access to a paid group storage allocation, the owner of the storage allocation should submit a request to icds@psu.edu to add the user to their <owner>_collab group.
+
+Roar Restricted Storage
+Storage	Location	Space Quota	Files Quota	Backup Policy	Use Case
+Home	/storage/home	16 GB	500,000 files	Daily snapshot	Configuration files
+Work	/storage/work	128 GB	1 million files	Daily snapshot	Primary user-level data
+Restricted	/storage/restricted	Specific to
+allocation	1 million files
+per TB allocated	Daily snapshot	Primary shared data
+Home should primarily be used for configuration files and should not be used as a primary storage location for data. Work should be used as the primary personal data storage location. There is no scratch filesystem location available on RR.
+
+To provide a user with access to a restricted storage allocation, the owner of the restricted storage allocation should submit a request to icds@psu.edu to add the user to their <owner>_collab group.
+
+Check Usage
+To check storage usage against the storage quotas, run the following command on Roar:
+
+$ check_storage_quotas
+The outputs generated by these scripts are not necessarily generated in real-time, but the underlying quota information is updated several times per day. After removing many files, for instance, the updates to the storage usage may not be reflected in the outputs until the next update period.
+
+For a real-time look into the memory usage for a particular storage location, navigate to the storage location and run the following command:
+
+$ du -sch .[!.]* * | sort -h
+For a real-time look into the number of files in a storage location, navigate to the storage location and run the following command:
+
+$ find . -type f | wc -l
+A user can check the storage usage of an accessible group storage location by running the following command:
+
+$ df -ui <storage_location>
+Managing Large Configuration Files
+Home is the primary location for configuration files, and many software packages will automatically place configuration files in this location. Sometimes, these configuration files can grow in size such that the Home directory approaches its storage quota limit. If this issue occurs, it is simple to move the configuration files from Home to Work and place a link in Home that points to the new location of the configuration files in Work.
+
+For instance, Anaconda stores its configuration files in ~/.conda by default, and this directory often grows to multiple GBs in size, consequently using a significant portion of the Home directory's allocated memory. The ~/.conda directory can be moved to Work and can be replaced by a link in Home that points to the new location. This can be carried out with the following commands:
+
+$ mv ~/.conda /storage/work/$(whoami)
+$ ln -s /storage/work/$(whoami)/.conda ~/.conda
+Storage Allocations
+A paid storage allocation provides access to a shareable group location for active file storage. Active group storage is included with a paid compute allocation, but additional storage space can be purchased separately as well. Active storage is mounted on all compute resources and enables users to read, write, and modify files stored there. For long-term storage of infrequently used files that is separate from compute resources, archive storage is available for purchase and is accessible via the Globus interface.
+
+Typically, access to group storage locations can be managed using the <owner>_collab group where the <owner> is the user ID of the owner of the group space. For users to be added or removed from <owner>_collab groups, the owner of that group must submit a request to icds@psu.edu.
+
+User-Managed Groups
+If the owner of a group space would like more control over the access groups or would like to designate a group coordinator, then it is recommended that the owner create a User Managed Group (UMG). The UMG allows a user to manage the group access list and group roles directly through the User Managed Group functionality through Penn State Accounts Management. Select the following options and adhere to the following recommendations when creating the UMG:
+
+Group Function:     Functional
+Campus:             University Park
+Display Name:       icds.rc.<umg_name>
+                    e.g. icds.rc.abc1234_collab
+Email:              Not necessary for RC use
+Security:           Sync with Enterprise Active Directory is required
+ICDS filters UMGs for display names that begin with icds.rc., so any UMGs created with this prefix will automatically appear within RC. It may take up to 15 minutes for a newly created UMG to appear on RC. To verify that a UMG is available on RC, run the following command on RC:
+
+$ getent group icds.rc.<umg_name>
+After a UMG is created, the owner can submit a request to icds@psu.edu to associate this UMG with the <owner>_collab group. Once the association between the UMG and the <owner>_collab group is made, then the group owner has full dynamic control over the access and roles of the <owner>_collab group by modifying the UMG membership. After this single request to ICDS, the owner no longer must submit requests to modify group membership and instead can manage the group directly. Note that any user added as a UMG member that does not have an active Roar account will not have access to Roar or any data on Roar until that user has an active Roar account.
+
+File Transfers
+RC offers many file transfer options, and these methods are described in the following sections on this page.
+
+To comply with restricted data storage standards, RR must adhere to a Secure Data Transfer Management Model. The data transfer process is described in detail in the Roar Restricted Addendum.
+
+Globus
+The recommended file transfer method for RC is Globus, especially for files that are multiple GBs in size or larger. Also, if issues due to an unreliable connection arise, transferring via Globus may be a good option. Globus is a web-based file transfer tool that automates the activity of managing file transfers, such as monitoring performance, retrying failed transfers, recovering from faults automatically whenever possible, and reporting status. With Globus, users can easily, reliably, and securely transfer data to and from RC.
+
+Globus endpoints must be installed on both the source and destination systems. RC has Globus endpoints available.
+
+RC Endpoint:
+PennState_ICDS_RC
+
+RC Archive Endpoint:
+Archive_PennState_ICDS
+To transfer files with Globus, visit the Globus website and log in as a Penn State user with your Penn State access account. Select the File Manager tab on the left side of the Globus web interface and select the source and destination endpoints. The endpoints may require an additional login. The files and locations for the transfer can be selected graphically, and the transfer can be initiated by selecting Start above the source endpoint file preview window. The transfer will be handled by Globus, and typically, successful completion of the transfer will generate an email to your Penn State email.
+
+Users can also download files from RC to their local device or upload files directly from their local device to RC using simple web interface operations. To download a file, right-click the file and select Download. To upload a file, select Upload from the Pane 1 Menu on the right.
+
+Globus provides detailed instructions on the following topics:
+
+Log in and transfer files
+Install and configure Globus Connect for Linux
+Install and configure Globus Connect for MacOSX
+Install and configure Globus Connect for Windows
+RC Portal File Manager
+The File Manager app on the RC Portal offers a very intuitive interface for file management. Files can be moved, edited, uploaded, and downloaded with relative ease using this utility. Users should limit the use of the RC Portal file manager utility to dealing with small files only.
+
+scp
+Users may use the scp command to transfer files to and from RC. For small-scale file transfers to/from RC, the submit nodes (hostname submit.hpc.psu.edu) can be used. It is typically practical to zip files together when transferring many files at once. In a terminal session, the scp command can be used to transfer files in the following way:
+
+$ scp [options] <source-user-id>@<source-host>[:<file-location>] <destination-user-id>@<destination-host>[:<file-location>]
+Some examples will further clarify the usage of this command. The two locations in this example are the directory /home/abc on a local laptop device and the user scratch space on RC. If a file named local.file in /home/abc is to be transferred to a user's scratch space, the user should run the following command from a terminal session on the local laptop:
+
+# Transfer to RC scratch space
+$ scp /home/abc/local.file <userid>@submit.hpc.psu.edu:/scratch/<userid>
+Alternatively, if the user navigates to the /home/abc location on their local laptop, the command can be slightly simplified to
+
+# Transfer to RC scratch space
+$ scp local.file <userid>@submit.hpc.psu.edu:/scratch/<userid>
+If a directory named datadir located on the user's RC scratch space is to be transferred to the local laptop's /home/abc directory, the user can run the following from a terminal session on the local laptop:
+
+# Transfer from RC scratch space
+$ scp -r <userid>@submit.hpc.psu.edu:/scratch/<userid> /home/abc/
+Note that since a directory is being transferred, the -r option must be used for the scp command so both the directory and its contents are transferred. If the user navigates the terminal to the /home/abc directory to conduct the transfer, then the /home/abc/ in the above commands can be replaced with a single period . to denote the current working directory.
+
+# Transfer from RC scratch space
+$ scp -r <userid>@submit.hpc.psu.edu:/scratch/<userid> .
+sftp
+The sftp command can also be used to transfer files and is more useful when transferring multiple smaller files in a piecemeal fashion. This method allows for interactive navigation on the remote connection. For small-scale file transfers to/from RC, the submit nodes (hostname submit.hpc.psu.edu) can be used. From a local device, an sftp connection can be made with
+
+$ sftp <userid>@<remote-host>[:<location>]
+To spawn an sftp connection on RC, use
+
+$ sftp <userid>@submit.hpc.psu.edu
+After the sftp connection is made, navigational commands (i.e. ls, cd, etc) are performed on the remote connection normally, while navigational commands are performed on the local connection by appending the letter l (lowercase L) to the commands (i.e. lls, lcd, etc). Files are transferred from the local device to the remote device using the put <filename> command, and files are transferred from the remote device to the local device using the get <filename> command. The connection is terminated with the exit command.
+
+rsync
+Yet another file transfer option is rsync. The rsync tool is widely used for backups and mirroring and as an improved copy command for everyday use. The rsync command takes the form
+
+$ rsync [options] <source-user-id>@<source-host>[:<file-location>] <destination-user-id>@<destination-host>[:<file-location>]
+The rsync tool should only be used within an interactive compute session due to its underlying resource requirements.
+
+************USING-SOFTWARE*************
+Using Software
+The software stack on Roar provides a wide variety of software to the entire user community. There are two software stacks available.
+
+System software stack: contains software that is available to all users by default upon logging into the system without a need to load anything.
+Central software stack: contains software that is available to all users by default, but the software modules must be loaded to access them.
+Modules
+The central software stack uses Lmod to package the available software. Lmod is a useful tool for managing user software environments using environment modules that can be dynamically added or removed using module files. Lmod is hierarchical, so sub-modules can be nested under a module that is dependent upon. Lmod alters environment variables, most notably the $PATH variable, in order to make certain software packages reachable by the user environment.
+
+Useful Lmod Commands
+Command	Description
+module avail	List all modules that are available to be loaded
+module show <module_name>	Show the contents of a module
+module spider <module_name>	Search the module space for a match
+module load <module_name>	Load module(s)
+module load <module>/<version>	Load a module of a specific version
+module unload <module_name>	Unload module(s)
+module list	List all currently loaded modules
+module purge	Unload all currently loaded modules
+module use <path>	Add a path to $MODULEPATH to expand module scope
+module unuse <path>	Remove a path from $MODULEPATH
+The central software stack is available to the user environment by default since the $MODULEPATH environment variable is set and contains the central software stack location. Modules can be directly loaded with
+
+$ module load <package>
+To see the available software modules, use
+
+$ module avail
+Custom Software
+Although a large variety of software packages are available via the system and central software stacks, users may need access to additional software. Users may also wish to have greater control over the software packages that are required for their research workflow.
+
+Custom Modules
+Users can install custom software packages and build custom software modules to build a custom user- or group-specific software stack. For users and groups with well-defined research workflows, it is recommended to create a custom software stack to keep close control of the software installation versions and configuration. A location should be specified that contains the custom software installations and the module files for the custom software installations should be stored together in a common location. This module location can be added to the $MODULEPATH environment variable so users can access the software modules just as they would for the central software stack. The Lmod documentation contains more detailed information on creating custom software modules.
+
+Anaconda
+Anaconda is a very useful package manager that is available on Roar. Package managers simplify software package installation and manage dependency relationships while increasing both the repeatability and the portability of software. The user environment is modified by the package manager so the shell can access different software packages. Anaconda was originally created for Python, but it can package and distribute software for any language. It is usually very simple to create and manage new environments, install new packages, and import/export environments. Many packages are available for installation through Anaconda, and it enables retaining the environments in a silo to reduce cross-dependencies between different packages that may perturb environments.
+
+Anaconda can be loaded from the software stack on RC with the following command:
+
+$ module load anaconda
+Usage of Anaconda may cause storage quota issues since environments and packages are stored within ~/.conda by default. This issue can be easily resolved by moving the ~/.conda directory to the work directory and creating a link in its place pointing to the new location in the work directory. This is described further in the Handling Data section on Managing Large Configuration Files.
+
+Installation Example
+After loading the anaconda module, environments can be created and packages can be installed within those environments. When using the anaconda module for the first time on a system, the conda init bash command may be required to initialize anaconda, then a new session must be started for the change to take effect. In the new session, the command prompt may be prepended with (base) which denotes that the session is in the base anaconda environment.
+
+To create an environment that contains both numpy and scipy, for example, run the following commands:
+
+(base) $ conda create -n py_env
+(base) $ conda activate py_env
+(py_env) $ conda install numpy
+(py_env) $ conda install scipy
+Note that after the environment is entered, the leading item in the prompt changes to reflect the current environment.
+
+Alternatively, the creation of an environment and package installation can be completed with a single line.
+
+(base) $ conda create -n py_env numpy scipy
+For more detailed information on usage, check out the Anaconda documentation.
+
+Useful Anaconda Commands
+Command	Description
+conda create –n <env_name>	Creates a conda environment by name
+conda create –p <env_path>	Creates a conda environment by location
+conda env list	Lists all conda environments
+conda env remove –n <env_name>	Removes a conda environment by name
+conda activate <env_name>	Activates a conda environment by name
+conda list	Lists all packages within an active environment
+conda deactivate	Deactivates the active conda environment
+conda install <package>	Installs a package within an active environment
+conda search <package>	Searches for a package
+conda env export > env_name.yml	Exports active environment to a file
+conda env create –f env_name.yml	Loads environment from a file
+Submission Script Usage
+Slurm does not automatically source the ~/.bashrc file in your batch job, so Anaconda may not be properly initialized within Slurm job submission scripts. Fortunately, the anaconda modules on the software stack initialize the software so that the conda command is automatically available within the Slurm job submission script. If using a different anaconda installation, this issue can be resolved by directly sourcing the ~/.bashrc file in your job script before running any conda commands:
+
+source ~/.bashrc
+Alternatively, the environment can be activated using source instead of conda.
+
+source activate <environment>
+Another way to resolve this is to add the following shebang to the top of a Slurm job script:
+
+#!/usr/bin/env bash -l
+Yet another option would be to put the following commands before activating the conda environment:
+
+module load <custom anaconda module>
+CONDAPATH=`which conda`
+eval "$(${CONDAPATH} shell.bash hook)"
+To reiterate, the anaconda modules available on the software stack are configured such that the conda command is automatically available within a Slurm job submission script. The above options are only necessary for other anaconda installations.
+
+Using Conda Environments in Interactive Apps
+Environments built with Anaconda can be used in Interactive Apps on the Roar Portals as well. Typically the environment should be created and configured in an interactive compute session, and then some additional steps are needed to make the environment available from within an Interactive App.
+
+Jupyter Server
+To access a conda environment within a Jupyter Server session, the ipykernel package must be installed within the environment. To do so, enter the environment and run the following commands:
+
+(base) $ conda activate <environment>
+(<environment>) $ conda install -y ipykernel
+(<environment>) $ ipython kernel install --user --name=<environment>
+After the ipykernel package is successfully installed within this environment, a Jupyter Server session can be launched via the Roar Portal. When submitting the form to launch the session, under the Conda environment type field, select the Use custom text field option from the dropdown menu. Then enter the following into the Environment Setup text field:
+
+module load anaconda
+After launching and entering the session, the environment is displayed in the kernel list.
+
+RStudio
+To launch an RStudio Interactive App session, RStudio must have access to an installation of R. R can either be installed within the conda environment itself, or it can be loaded from the software stack. Typically, R will be installed by default when installing R packages within a conda environment; therefore, it is recommended when using conda environments within RStudio to simply utilize the environment's own R installation. To create an environment containing an R installation, run the following command:
+
+(base) $ conda create -y -n <environment> r-base
+Alternatively, R can simply be added to an existing environment by entering that environment and installing using the following command:
+
+(<environment>) $ conda install r-base <plus any additional R packages>
+R packages can installed directly via Anaconda within the environment as well. R packages available in Anaconda are usually named r-<package name> such as r-plot3d, r-spatial, or r-ggplot.
+
+After R and any necessary R packages are installed within the environment, an RStudio session can be launched via the Roar Portal. When submitting the form to launch the session, under the Environment type field, select the Use custom text field option from the dropdown menu. Then enter the following into the Environment Setup text field:
+
+module load anaconda
+conda activate <environment>
+export CONDAENVLIB=~/.conda/envs/<environment>/lib
+export LD_LIBRARY_PATH=$CONDAENVLIB:$LD_LIBRARY_PATH
+Please note that the default location of conda environments is in ~/.conda/envs, which is why the CONDAENVLIB variable is being set to ~/.conda/envs/<environment>/lib. If the environment is instead installed a non-default location, then the CONDAENVLIB variable should be set accordingly. The two export commands in the block above are required because RStudio often has an issue loading some libraries while accessing the conda environment's R installation. Explicitly adding the conda environment's lib directory to the LD_LIBRARY_PATH variable seems to clear up this issue.
+
+Compiling From Source
+Compiling software from source is the most involved option for using software, but it gives the user the highest level of control. Research computing software is often developed by academic researchers that do not place a large effort on packaging their software so that it can be easily deployed on other systems. If the developer does not package the software using a package manager, then the only option is to build the software from source. It is best to follow the installation instructions from the developer to successfully install the software from source.
+
+It is recommended to build software on a node with the same processor type that will be used for running the software. On a compute node, running the following command displays the processor type:
+
+$ cat /sys/devices/cpu/caps/pmu_name
+Software builds are not typically back-compatible and will not run successfully on processors older than the processor used to build. It is recommended to build on haswell (the oldest processor architecture on Roar) if you wish to have full compatibility across any Roar compute node. To optimize for performance, however, build on the same processor on which the software runs.
+
+| Release Date | Processor |
+| :----: | :----: |
+| 2013 | haswell |
+| 2014 | broadwell |
+| 2015 | skylake |
+| 2019 | cascadelake |
+| 2019 | icelake |
+| 2023 | sapphirerapids |
+Containers
+A container is a standard unit of software with two modes:
+
+Idle: When idle, a container is a file that stores everything an application (or collection of applications) requires to run (code, runtime, system tools, system libraries and settings).
+Running: When running, a container is a Linux process running on top of the host machine kernel with a user environment defined by the contents of the container file, not by the host OS.
+A container is an abstraction at the application layer. Multiple containers can run on the same machine and share the host kernel with other containers, each running as isolated processes.
+
+Apptainer is a secure container platform designed for HPC use cases and is available on Roar. Containers (or images) can either be pulled directly from a container repository or can be built from a definition file. A definition file or recipe file contains everything required to build a container. Building containers requires root privileges, so containers are built on your personal device and can be deployed on Roar. Alternatively, users can utilize the --fakeroot option to build containers without root privileges, and the usage of this method is described in Apptainer's documentation of the fakeroot feature.
+
+Software is continuously growing in complexity which can make managing the required user environment and wrangling dependent software an intractable problem. Containers address this issue by storing the software and all its dependencies (including a minimal operating system) in a single image file, eliminating the need to install additional packages or alter the runtime environment. This makes the software both shareable and portable while the output becomes reproducible.
+
+In a Slurm submission script, a container can be called serially using the following run line:
+
+$ apptainer run <container> <args>
+To use a container in parallel with MPI, the MPI library within the container must be compatible with the MPI implementation on the system, meaning that the MPI version on the system must generally be newer than the MPI version within the container. More details on using MPI with containers can be found on Apptainer's Apptainer and MPI Applications page. In a Slurm submission script, a container with MPI can be called using
+
+$ srun apptainer exec <container> <command> <args>
+Containers change the user space into a swappable component, and provide the following benefits:
+
+Flexibility: Bring your own environment (BYOE) and bring your own software (BYOS)
+Reproducibility: Complete control over software versions
+Portability: Run a container on your laptop or on HPC systems
+Performance: Similar performance characteristics as native applications
+Compatibility: Open standard that is supported on all major Linux distributions
+Container Registries
+Container images can be made publicly available, and containers for many use cases can be found at the following container registries:
+
+Docker Hub
+Singularity Hub
+Singularity Cloud Library
+NVIDIA GPU Cloud
+Quay.io
+BioContainers
+Useful Apptainer Commands
+Command	Description
+apptainer build <container> <definition>	Builds a container from a definition file
+apptainer shell <container>	Runs a shell within a container
+apptainer exec <container> <command>	Runs a command within a container
+apptainer run <container>	Runs a container where a runscript is defined
+apptainer pull <resource>://<container>	Pulls a container from a container registry
+apptainer build --sandbox <sbox> <container>	Builds a sandbox from a container
+apptainer build <container> <sbox>	Builds a container from a sandbox
+Building Container Images
+Containers can be made from scratch using a definition file, or recipe file, which is a text file that specifies the base image, the software to be installed, and other information. The apptainer build command's documentation shows the full usage for the build command. Container images can also be bootstrapped from other images, found on Docker Hub for instance.
+
+The recommended workflow for building containers is shown below:
+
+This image outlines the process for building and modifying a containerized environment, likely using containerization tools like Apptainer (previously known as Singularity), which is common in research computing.
+
+Here’s a breakdown of the flowchart:
+
+Main Steps:
+Find base container to build from:
+
+The process begins by identifying an existing container that serves as the foundation. This could be a publicly available container image from repositories like Docker Hub or any trusted source that aligns with the base environment needed.
+Build a sandbox:
+
+A sandbox is a writable environment where users can make changes to the container. Unlike a standard read-only container, the sandbox allows for installing additional software, making file system changes, or running custom scripts.
+Capture all actions in a definition file and rebuild the read-only container:
+
+Once the necessary changes have been made in the sandbox, those actions are documented in a definition file. This file contains all the steps taken, such as software installations or configuration tweaks, so that they can be replicated. The container is then rebuilt into a read-only form based on this definition file.
+If Necessary Loop:
+If more changes or tests are needed, the process continues within the blue box.
+
+Make changes to the sandbox:
+
+This could involve creating new directories, making links, or installing additional packages that were missed initially.
+Test on RC (Research Cluster or Remote Cluster):
+
+Before finalizing the container, it is tested on a research computing environment, such as a high-performance computing (HPC) cluster, to ensure it performs as expected.
+Establish a base recipe file:
+
+If the modifications and tests are successful, the next step is to formalize the changes in a recipe file or the definition file, which can now be used to consistently reproduce the same environment.
+The dashed lines between boxes indicate that these steps may loop back if further adjustments are necessary.
+
+Purpose of this Process:
+This flowchart illustrates a best-practice methodology for customizing a containerized environment for research workflows. It emphasizes creating reproducible and maintainable environments, starting from a base image, modifying it in a sandbox environment, and finally documenting all changes for consistent future use.
+
+This type of approach is commonly used in scientific computing, particularly when preparing software stacks for specialized tasks, running simulations, or preparing workflows on clusters where consistency and repeatability are crucial.
+
+Software-Specific Guides
+Python
+Python is a high-level, general-purpose programming language.
+
+Python versions
+Python is available by default to all users on the system software stack, and it is also available on the central software stack. Additionally, users can install their own instances of Python in a variety of ways in either their userspace or in group spaces.
+
+Install Python Packages with pip
+Python packages can be installed easily using pip. By default, pip will attempt to install packages to a system location. On shared systems, however, users do not have write access to system locations. The packages can instead be installed in ~/.local, which is a user location, using the following:
+
+$ pip install --user <package>
+Also, packages can be installed to a custom specified location using the --target option:
+
+$ pip install --target=<install_dir> <package>
+Note that if pip is not available, simply try pip3 (for python3) or pip2 (for python2) instead.
+
+R
+R is a free software environment for statistical computing and graphics.
+
+R Versions
+R users should make sure that the version of R remains consistent. Several R versions are available, and when a package is installed in one version, it is not always accessible when operating in another version. Always check the R version and remain consistent! R modules can be loaded from the central software stack, and R can also be installed by users in a variety of ways within their userspace or group spaces.
+
+Install R Packages
+R manages some dependencies and versions through the CRAN-like repos. R packages can be installed from within the R console with the following command:
+
+> install.packages( <package> )
+Upon running the install command, a warning usually appears stating that the default system install location is not writable, so it asks to install in a personal library instead. After entering "yes" as a response, it may then ask to create a personal library location. Responding "yes" again will proceed with the installation, probably by asking to select a CRAN repository.
+
+The default personal directory described above will install the package within the ~/R/ directory. An install location can instead be supplied to the install command using the lib argument:
+
+> install.packages( "<package>", lib="<install_location>" )
+After installation, packages can then be loaded using the following command in the R console:
+
+> library( <package> )
+If the package was installed in a non-standard location, then the package can be loaded from that custom install location using the lic.loc argument of the library() command:
+
+> library( <package>, lib.loc="<install_location>" )
+Another method to specify package installation locations for R is to modify the R_LIBS environment variable before launching an R console session. If RStudio is being used, though, the R_LIBS_USER environment variable must be modified before launching RStudio. Modifying these environment variables properly can eliminate the need to use the lib.loc option of R's library() command.
+
+It is recommended to review dependencies of any packages to be installed because additional software may have to be loaded in the environment before launching the R console. For example, some R packages utilize CMake to perform the installation. In that case, the cmake module should be loaded before launching the R console session.
+
+R Package Installation Example
+To install the ggplot2 R package, first search ggplot2 online to see if there are installation instructions. A quick search shows that ggplot2 is included in the tidyverse package and that the recommended installation instructions are the following:
+
+# The easiest ways to get ggplot2 is to install the whole tidyverse package:
+> install.packages("tidyverse")
+
+# Alternatively, install just ggplot2:
+> install.packages("ggplot2")
+Searching for install instructions usually provides all the necessary information!
+
+Some R packages may require changes to the user environment before the package can be installed successfully within the R console. Typically, the user environment change is as simple as accessing a newer compiler version by loading a software module like intel with
+
+$ module load intel
+Sometimes, installing R packages may be a little more involved. To install the units R package, for example, an additional library must be downloaded and installed locally for the package to be installed properly. To install the units R package for R version 4.2.1, perform the following commands in an interactive session on a compute node:
+
+$ cd ~/scratch
+$ wget https://downloads.unidata.ucar.edu/udunits/2.2.28/udunits-2.2.28.tar.gz
+$ tar -xvf udunits-2.2.28.tar.gz
+$ cd udunits-2.2.28
+$ ./configure prefix=$HOME/.local
+$ make
+$ make install
+$ export UDUNITS2_INCLUDE=$HOME/.local/include
+$ export UDUNITS2_LIBS=$HOME/.local/lib
+$ export LD_LIBRARY_PATH=$HOME/.local/lib:$LD_LIBRARY_PATH
+$ module load r/4.2.1
+$ R
+> install.packages("units")
+> library(units)
+R Packages with Anaconda
+The R installation itself and its R packages can be easily installed and managed within a conda environment. Creating a conda environment containing its own R installation and some R packages can be accomplished with the following:
+
+(base) $ conda create -n r_env
+(base) $ conda activate r_env
+(r_env) $ conda install r-base
+(r_env) $ conda install r-tidyverse
+Note that after r-base is the base R installation, and R packages (or in the case of tidyverse, a bundle of packages) usually are named r-* in conda repos.
+
+Alternatively, the creation of this environment can be completed with a single line.
+
+(base) $ conda create -n r_env r-base r-tidyverse
+
+******************ROAR-RESTRICTED-ADDENDUM*************************************
+Roar Restricted Addendum
+Roar Restricted (RR) is configured for the handling of restricted data and is dedicated to serving the small portion of researchers who must comply with more stringent data storage standards. Restricted group storage on RR is provided on an as-needed basis to a principal investigator (PI) specifically handling restricted data.
+
+Most of the material within this ICDS User Guide is common to both Roar Collab (RC) and RR, but some sections specifically refer to RC. This Roar Restricted Addendum specifically addresses items unique to RR.
+
+RR system specifications and RR storage locations are described within the linked Roar User Guide sections.
+
+Accessing Roar Restricted
+RR accounts are only granted to individuals that require access to an active restricted storage allocation. Also, RR does offer a free compute account, so users must submit jobs to a compute account provided by a paid compute allocation.
+
+To request an account on RR, a user must complete the Account Request form and then send an email to icds@psu.edu with the user's PSU access account ID, the restricted storage owner's name and access account ID, and an indication that they are requesting an account on RR. Non-faculty accounts require approval from a faculty/PI sponsor. The user will then be assigned an RR training module. To gain and retain access to RR, users must complete the RR training module via Penn State LRN which is required by the Office of Information Security (OIS) to maintain compliance with the Authority to Operate (ATO). The account creation process takes about 48 hours after faculty/PI sponsor approval.
+
+Connecting
+Users can only connect to RR via the RR Portal (rrportal.hpc.psu.edu). RR is only accessible when connecting either via the Penn State network or via Penn State GlobalProtect VPN. GlobalProtect can be downloaded from it.psu.edu/software and additional configuration instructions are available from Penn State IT.
+
+Handling Data
+RR is designed to limit the risk of accidental data leaks, so ICDS is implementing a data transfer process that relies on a PI-appointed data administrator to transfer data to/from RR. PIs and any appointed data administrators are responsible for the data and any transfers conducted via the data manager node. PIs can request access to the file transfer capability via the Data Transfer Access Form. PIs and any data administrators must attest annually that they still need access to the data manager node.
+
+To request data administrator access, a user must email icds@psu.edu with the faculty/PI sponsor copied. The faculty/PI sponsor must approve that the user should be granted data administrator status. Upon faculty/PI confirmation, the user must submit the Data Transfer System Access Request Form. The user will then be added to the necessary groups on RR to grant them access to the data manager nodes.
+
+To comply with restricted data storage standards, Roar Restricted (RR) must adhere to a Secure Data Transfer Management Model. Users cannot transfer data on or off RR, but they can move data between the main restricted group storage and the group's staging area. Data administrators may transfer data on and off RR via the data manager node using a group's staging area. While conducting transfers, data administrators are responsible for adhering to the data management standards and guidelines. Transfers are conducted using the process outlined in the diagrams below.
+
+This image illustrates the **Outbound Transfer Workflow** for moving data off of a restricted resource (RR) storage system, possibly used in a research computing context where sensitive data is handled.
+
+### **Steps Involved:**
+
+#### 1. **User Initiates Data Transfer**:
+   - **User**: Represented by a green-outlined icon, the user starts the process.
+   - **Firewall**: The user is on a network protected by a firewall.
+   - **RR Portal**: The user logs into the RR portal (`rrportal.hpc.psu.edu`) to begin the data transfer. The portal allows access but restricts data sharing and SSH functionality.
+   - **Storage Location**: The user’s data is stored under `/storage/restricted/<PI>/<restrictedtype>` on the restricted resource (RR). `<PI>` likely represents the Principal Investigator or project owner, and `<restrictedtype>` denotes the type of restricted data.
+   - **User Moves Data**: The user moves the data to a designated **staging area** within the storage system (`/storage/restricted/<PI>/datastage`), which is a temporary holding location for outbound transfers.
+
+#### 2. **Data Admin Finalizes Transfer**:
+   - **Data Admin**: Represented by a red-outlined icon, the data administrator has elevated permissions to handle the restricted data transfers.
+   - **Firewall**: Similar to the user, the data admin’s network is protected by a firewall.
+   - **Transfer Protocols**: The data admin uses secure protocols (`scp`, `sftp`, or `rsync`) to transfer the data from the staging area to an external system or off of the RR environment. The admin accesses the server `rr-datamgr01.hpc.psu.edu` to manage the transfer.
+   - **Final Transfer**: The data admin moves the data from the staging area `/storage/restricted/<PI>/datastage` to the final destination, off of the RR system.
+
+### **Meaning of the Workflow**:
+- **Data Access and Security**: The image emphasizes a highly controlled process for transferring sensitive or restricted data. Users can stage the data for outbound transfer, but the actual movement of data off the system is controlled by a designated data administrator. This ensures compliance with security protocols and prevents unauthorized or accidental data sharing.
+- **Two-Step Process**: It ensures that data leaving the restricted environment is verified and handled properly by an authorized person, maintaining the integrity of sensitive datasets.
