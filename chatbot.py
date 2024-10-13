@@ -4,7 +4,6 @@ import tkinter as tk
 from tkinter import ttk
 from ttkthemes import ThemedTk
 from langchain.document_loaders import TextLoader
-from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
 from langchain.chains import RetrievalQA
@@ -43,16 +42,16 @@ qa_chain = RetrievalQA.from_chain_type(llm=OpenAI(), chain_type="stuff", retriev
 
 
 def get_eastern_time():
-    '''
+    """
     Retrieve the current time in the Eastern Time Zone (America/New_York).
     Returns the time formatted as a string in "HH:MM:SS" format.
-    '''
+    """
     eastern = pytz.timezone('America/New_York')
     return datetime.now(eastern).strftime("%H:%M:%S")
 
 
 def create_rounded_button(parent, text, command):
-    '''
+    """
     Create a themed rounded button for a given parent widget.
 
     Parameters:
@@ -62,7 +61,7 @@ def create_rounded_button(parent, text, command):
 
     Returns:
     A ttk.Button instance styled as a rounded button.
-    '''
+    """
     style = ttk.Style()
     style.configure("Round.TButton", padding=6, relief="flat", background="#4CAF50")
     return ttk.Button(parent, text=text, command=command, style="Round.TButton")
@@ -117,13 +116,13 @@ chat_history.configure(yscrollcommand=scrollbar.set)
 
 
 def display_initial_message():
-    '''
+    """
     Display the initial greeting message from the chatbot in the chat history.
 
     This function temporarily enables the chat history for editing, inserts a welcome 
     message, configures the message's appearance, and then disables the chat history 
     to prevent user edits. It also ensures the latest message is visible.
-    '''
+    """
     chat_history.config(state=tk.NORMAL)
     chat_history.insert(tk.END, "RAGatha: Hello, I am RAGatha the Chatbot. What can I answer?\n\n", "ai")
     chat_history.tag_configure("ai", foreground="#28a745", font=("Arial", 12, "bold"))
@@ -150,14 +149,14 @@ entry.grid(row=0, column=0, sticky="ew", padx=(0, 10))
 
 
 def generate_response(user_input):
-    '''
+    """
     Generate a response to the user's input and update the chat history.
 
     This function processes the user's input using the qa_chain to obtain a response. 
     It retrieves the current Eastern Time for timestamping, updates the chat history 
     to display the response, formats the message with a specific appearance, and ensures 
     the latest message is visible while disabling further editing in the chat history.
-    '''
+    """
     result = qa_chain.run(user_input)
     timestamp = get_eastern_time()
 
@@ -170,7 +169,7 @@ def generate_response(user_input):
 
 
 def handle_message():
-    '''
+    """
     Handle the user's message input and update the chat history.
 
     This function retrieves the user's input from the entry widget and checks if it's 
@@ -178,7 +177,7 @@ def handle_message():
     both the user's input and a temporary message indicating that a response is being 
     generated. The chat history is formatted for each message type, and then a separate 
     thread is started to generate the chatbot's response, allowing the interface to remain responsive.
-    '''
+    """
     user_input = entry.get()
     if user_input.strip():
         timestamp = get_eastern_time()
@@ -197,9 +196,18 @@ def handle_message():
         threading.Thread(target=generate_response, args=(user_input,), daemon=True).start()
 
 
+'''
+Create a rounded button in the input frame labeled "Send", 
+which triggers the handle_message function when clicked.
+'''
 send_button = create_rounded_button(input_frame, "Send", handle_message)
 send_button.grid(row=0, column=1)
 
+'''
+Bind the Enter key to the handle_message function, 
+allowing users to submit their input by pressing Enter.
+'''
 root.bind('<Return>', lambda event: handle_message())
 
+# Start the main event loop to run the application.
 root.mainloop()
