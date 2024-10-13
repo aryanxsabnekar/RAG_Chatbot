@@ -14,7 +14,7 @@ from datetime import datetime
 import pytz
 
 
-os.environ["OPENAI_API_KEY"] = "sk-zwyjV0GR8upv6-6jozlUwh9zcMUlSe_J3iWm5tHrcIT3BlbkFJYr_Ob38FnM854kk3iqbLjDGPQdCozGbaYcklu2i6AA"
+os.environ["OPENAI_API_KEY"] = ""#Enter your own OPENAI API KEY
 
 loader = TextLoader("handbook_data.txt")
 docs = loader.load()
